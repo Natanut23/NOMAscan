@@ -3,3 +3,4 @@ line-bot-sdk
 keras  
 tensorflow  
 gunicorn
+Pillow
