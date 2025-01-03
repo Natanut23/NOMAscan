@@ -7,7 +7,7 @@ import sys
 import os
 
 # ตั้งค่า Python Path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
 line_bot_api = LineBotApi('2006735158')  # เปลี่ยนเป็น Channel Access Token จริง
