@@ -9,10 +9,17 @@ import os
 # ตั้งค่า Python Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# สร้าง Flask แอปพลิเคชัน
 app = Flask(__name__)
 line_bot_api = LineBotApi('2006735158')  # เปลี่ยนเป็น Channel Access Token จริง
-handler = WebhookHandler('13a8ee9fdc8259b37236ad5510c103f4')         # เปลี่ยนเป็น Channel Secret จริง
+handler = WebhookHandler('13a8ee9fdc8259b37236ad5510c103f4')  # เปลี่ยนเป็น Channel Secret จริง
 
+# Route สำหรับ root URL
+@app.route("/")
+def index():
+    return "Hello, this is the LINE Bot Flask server."
+
+# Route สำหรับ Webhook LINE Bot
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -20,11 +27,13 @@ def callback():
     handler.handle(body, signature)
     return 'OK'
 
+# ฟังก์ชันจัดการข้อความ
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     reply = "กรุณาส่งรูปภาพเพื่อตรวจสอบ หรือพิมพ์ 'predict' เพื่อเริ่มการทำงาน"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
+# ฟังก์ชันจัดการรูปภาพ
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     try:
@@ -61,4 +70,6 @@ def handle_image(event):
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    # อ่าน PORT จาก environment variables
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
