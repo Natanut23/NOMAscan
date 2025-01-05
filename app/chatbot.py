@@ -5,9 +5,6 @@ from keras.models import load_model
 from app.predict import predict_image
 import sys
 import os
-import logging
-logging.basicConfig(level=logging.DEBUG)
-
 
 # ตั้งค่า Python Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -25,21 +22,10 @@ def index():
 # Route สำหรับ Webhook LINE Bot
 @app.route("/callback", methods=['POST'])
 def callback():
-    signature = request.headers.get('X-Line-Signature', '')
+    signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
-    app.logger.debug(f"Received body: {body}")
     handler.handle(body, signature)
     return 'OK'
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        return "Invalid signature. Please check your Channel Access Token/Secret.", 400
-    except Exception as e:
-        print(f"Error: {e}")
-        return "Error occurred.", 500
-
-    # คืนค่า HTTP 200 (สำคัญมากสำหรับ LINE Webhook)
-    return 'OK', 200
 
 # ฟังก์ชันจัดการข้อความ
 @handler.add(MessageEvent, message=TextMessage)
