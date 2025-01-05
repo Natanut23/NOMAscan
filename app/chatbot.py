@@ -5,6 +5,9 @@ from keras.models import load_model
 from app.predict import predict_image
 import sys
 import os
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 # ตั้งค่า Python Path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -22,8 +25,9 @@ def index():
 # Route สำหรับ Webhook LINE Bot
 @app.route("/callback", methods=['POST'])
 def callback():
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers.get('X-Line-Signature', '')
     body = request.get_data(as_text=True)
+    app.logger.debug(f"Received body: {body}")
     handler.handle(body, signature)
     return 'OK'
 
