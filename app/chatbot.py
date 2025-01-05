@@ -30,6 +30,16 @@ def callback():
     app.logger.debug(f"Received body: {body}")
     handler.handle(body, signature)
     return 'OK'
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        return "Invalid signature. Please check your Channel Access Token/Secret.", 400
+    except Exception as e:
+        print(f"Error: {e}")
+        return "Error occurred.", 500
+
+    # คืนค่า HTTP 200 (สำคัญมากสำหรับ LINE Webhook)
+    return 'OK', 200
 
 # ฟังก์ชันจัดการข้อความ
 @handler.add(MessageEvent, message=TextMessage)
